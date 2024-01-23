@@ -14,14 +14,15 @@ import { PaginationDTO } from 'src/common/dto/pagimation.dto';
 
 @Injectable()
 export class PokemonService {
+  private defaultLimit: number;
+
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
 
     private readonly configService: ConfigService,
   ) {
-    const defaulLimit = (configService.get('defaultLimit'))
-    console.log(configService.get('defaultLimit'))
+    this.defaultLimit = configService.get<number>('defaultLimit');
   }
 
   async create(createPokemonDto: CreatePokemonDto) {
@@ -44,7 +45,7 @@ export class PokemonService {
   }
 
   findAll(paginationDto: PaginationDTO) {
-    const { limit = +process.env.DEFAULT_LIMIT, offset = 0 } = paginationDto;
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
     return this.pokemonModel
       .find()
       .limit(limit)
